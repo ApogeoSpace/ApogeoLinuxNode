@@ -1,0 +1,6 @@
+/target
+*.dtbo
+build/
+*.o
+*.ko
+built/

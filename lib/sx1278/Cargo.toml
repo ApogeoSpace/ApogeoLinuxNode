@@ -1,0 +1,13 @@
+[package]
+name = "sx1278"
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+
+[dependencies]
+modular-bitfield = "0.12"
+bitflags = "2.9.1"
+libm = "0.2.11"
+
+[lib]
+test = false

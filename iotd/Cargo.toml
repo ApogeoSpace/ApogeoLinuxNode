@@ -1,0 +1,20 @@
+[package]
+name = "iotd"
+description = "IoT device driver logic"
+
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+
+[lib]
+crate-type = ["staticlib"]
+test = false
+
+[dependencies]
+# num_enum = {version = "0.7.4", default-features = false}
+sx1278.workspace = true
+aps-crypto.workspace = true
+
+[build-dependencies]
+bindgen = "0.71.0"
+cbindgen = "0.29.0"

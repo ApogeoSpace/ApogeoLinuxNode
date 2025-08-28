@@ -1,0 +1,22 @@
+{
+    "files.associations": {
+        "spi.h": "c",
+        "interface.h": "c",
+        "chardev.h": "c",
+        "module.h": "c",
+        "types.h": "c",
+        "random": "c",
+        "limits": "c",
+        "algorithm": "c",
+        "array": "c",
+        "string_view": "c",
+        "initializer_list": "c",
+        "provided.h": "c",
+        "iotd.h": "c"
+    },
+    "rust-analyzer.check.allTargets": false,
+    "rust-analyzer.check.extraArgs": [
+        "--target",
+        "aarch64-unknown-linux-gnu",
+    ],
+}

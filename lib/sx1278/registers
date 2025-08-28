@@ -1,0 +1,556 @@
+REG OpMode 0x01 1 LORA RW Operating mode & LoRa / FSK selection
+    FIELD 1 LongRangeMode RW LoRa mode enable. Must be modified only in Sleep mode
+        VALUE 0 FskOokMode This selects FSK/OOK modulation mode
+        VALUE 1 LoRaMode This selects LoRa modulation mode
+    SKIP 3
+    FIELD 1 LowFrequencyMode RW Access Low Frequency Mode test registers
+        VALUE 0 HighFrequency High Frequency test registers enabled
+        VALUE 1 LowFrequency Low Frequency test registers enabled
+    FIELD 3 Mode RW Device operating mode selection
+        VALUE 0 Sleep Lowest power mode
+        VALUE 1 Standby Crystal oscillator and baseband active
+        VALUE 2 Fstx Frequency synthesis TX
+        VALUE 3 Tx Transmit
+        VALUE 4 Fsrx Frequency synthesis RX
+        VALUE 5 RxContinuous Continuous reception
+        VALUE 6 RxSingle Single packet reception
+        VALUE 7 Cad Channel activity detection
+
+# -NOTE: implement formula from/into
+REG Frequency 0x06 3 ALL RW RF carrier frequency setting. F_{rf} = F_{xtal} * REG / 2^19
+
+REG PaConfig 0x09 1 ALL RW PA configuration
+    FIELD 1 PaSelect RW Selects PA output pin
+        VALUE 0 RfoPin RFO pin. Output power limited to +14 dBm
+        VALUE 1 PaBoostPin PA_BOOST pin. Output power limited to +20 dBm
+    FIELD 3 MaxPower RW Sets maximum output power
+    FIELD 4 OutputPower RW Output power setting. OutputPower + MaxPower defines total power
+
+REG PaRamp 0x0A 1 ALL RW PA ramp-up timeout
+    SKIP 4
+    FIELD 4 PaRamp RW PA ramp-up time
+        VALUE 0 Ramp3_4us 3.4 us
+        VALUE 1 Ramp2us 2 us
+        VALUE 2 Ramp1ms 1 ms
+        VALUE 3 Ramp500us 500 us
+        VALUE 4 Ramp250us 250 us
+        VALUE 5 Ramp125us 125 us
+        VALUE 6 Ramp100us 100 us
+        VALUE 7 Ramp62us 62 us
+        VALUE 8 Ramp50us 50 us
+        VALUE 9 Ramp40us 40 us
+        VALUE 10 Ramp31us 31 us
+        VALUE 11 Ramp25us 25 us
+        VALUE 12 Ramp20us 20 us
+        VALUE 13 Ramp15us 15 us
+        VALUE 14 Ramp12us 12 us
+        VALUE 15 Ramp10us 10 us
+
+REG Ocp 0x0B 1 ALL RW Over current protection control
+    SKIP 2
+    FIELD 1 OcpStatus RW Enables over current protection
+        VALUE 0 Disabled Over current protection disabled
+        VALUE 1 Enabled Over current protection enabled
+    FIELD 5 OcpTrim RW OCP current trimming (mA). Imax = 45+5*OcpTrim [mA] if OcpTrim <= 15 (120 mA) else Imax = -30+10*OcpTrim [mA] if 15 < OcpTrim <= 27 (130 to 240 mA) else Imax = 240mA
+
+REG Lna 0x0C 1 ALL RW LNA configuration
+    FIELD 3 LnaGain RW Sets gain of LNA
+        VALUE 0 G1 Maximum gain
+        VALUE 1 G2 G2
+        VALUE 2 G3 G3
+        VALUE 3 G4 G3
+        VALUE 4 G5 G5
+        VALUE 5 G6 Minimum gain
+    FIELD 2 LnaBoostLf RW Low Frequency LNA boost
+        VALUE 0 Default Default gain
+    SKIP 1
+    FIELD 2 LnaBoostHf RW High Frequency LNA boost
+
+REG FifoAddrPtr 0x0D 1 LORA RW Pointer to current FIFO read/write address
+
+REG FifoTxBaseAddr 0x0E 1 LORA Base address in FIFO for TX operations
+
+REG FifoRxBaseAddr 0x0F 1 LORA RW RW Base address in FIFO for RX operations
+
+REG FifoRxCurrentAddr 0x10 1 LORA R Start address of last packet received
+
+# -NOTE: Later update code to use IRQ bitflags structure
+REG IrqFlagsMask 0x11 1 LORA RW IRQ flags mask
+
+# -NOTE: Later update code to use IRQ bitflags structure
+REG IrqFlags 0x12 1 LORA RC IRQ flags
+    FIELD 1 RxTimeout RC Set when a timeout occurs during reception
+    FIELD 1 RxDone RC Set when a packet is successfully received
+    FIELD 1 PayloadCrcError RC Set when a CRC error occurs on payload
+    FIELD 1 ValidHeader RC Set when a valid header is received (if Header mode is enabled)
+    FIELD 1 TxDone RC Set when packet transmission is complete
+    FIELD 1 CadDone RC Set when CAD operation is complete
+    FIELD 1 FhssChangeChannel RC Set when frequency hop occurs
+    FIELD 1 CadDetected RC Set when activity is detected during CAD
+
+REG RxNbBytes 0x13 1 LORA R Number of bytes received in the last packet
+
+REG RxHeaderCntValue 0x14 2 LORA R Number of valid headers received
+
+REG RxPacketCntValue 0x16 2 LORA R Number of received packets
+
+# -NOTE: Later use bitflag stat
+REG ModemStat 0x18 1 LORA R Modem status
+    FIELD 3 RxCodingRate R Indicates coding rate used in last successful reception
+    FIELD 1 ModemClear R Indicates modem status is clear
+    FIELD 1 HeaderInfoValid R Indicates valid header received
+    FIELD 1 RxOngoing R Current Rx modem status
+    FIELD 1 SignalSynchronized R Indicates synchronization achieved
+    FIELD 1 SignalDetected R Indicates signal detected
+
+# -NOTE: Adjust formula into
+REG PacketSnrValue 0x19 1 LORA R Estimated SNR in two's complement format
+
+# -NOTE: Adjust formula into
+REG PacketRssiValue 0x1A 1 LORA R RSSI value of last packet received
+
+# -NOTE: Adjust formula into
+REG RssiValue 0x1B 1 LORA R Current RSSI value
+
+REG HopChannel 0x1C 1 LORA R Frequency hopping information
+    FIELD 1 PllTimeout R PLL failed to lock while attempting a TX/RX/CAD operation
+    FIELD 1 CrcOnPayload R CRC Information extracted from the received packet header
+    FIELD 6 FhssPresentChannel R Current channel index used in FHSS
+
+REG ModemConfig 0x1D 2 LORA RW LoRa modem configuration. In the lower band (169MHz), signal bandwidths 8&9 are not supported
+    FIELD 4 Bw RW Signal bandwidth
+        VALUE 0 Bw7_8KHz 7.8 kHz
+        VALUE 1 Bw10_4KHz 10.4 kHz
+        VALUE 2 Bw15_6KHz 15.6 kHz
+        VALUE 3 Bw20_8KHz 20.8 kHz
+        VALUE 4 Bw31_25KHz 31.25 kHz
+        VALUE 5 Bw41_7KHz 41.7 kHz
+        VALUE 6 Bw62_5KHz 62.5 kHz
+        VALUE 7 Bw125KHz 125 kHz
+        VALUE 8 Bw250KHz 250 kHz
+        VALUE 9 Bw500KHz 500 kHz
+    FIELD 3 CodingRate RW Error coding rate
+        VALUE 1 Cr4_5 4/5
+        VALUE 2 Cr4_6 4/6
+        VALUE 3 Cr4_7 4/7
+        VALUE 4 Cr4_8 4/8
+    FIELD 1 ImplicitHeader RW Enables implicit header mode
+    FIELD 4 SpreadingFactor RW Spreading factor
+        VALUE 6 Sf6 SF6
+        VALUE 7 Sf7 SF7
+        VALUE 8 Sf8 SF8
+        VALUE 9 Sf9 SF9
+        VALUE 10 Sf10 SF10
+        VALUE 11 Sf11 SF11
+        VALUE 12 Sf12 SF12
+    FIELD 1 TxContinuousMode RW Enable continuous TX mode
+    FIELD 1 RxPayloadCrc RW Enables CRC on payload
+    FIELD 2 SymbTimeoutMSB RW RX Time-Out MSB (9:8)
+
+REG SymbTimeout 0x1F 1 LORA RW Symbol timeout (LSB)
+    FIELD 8 SymbTimeoutLsb RW Symbol timeout, LSB byte
+
+REG Preamble 0x20 2 LORA RW Preamble length
+
+REG PayloadLength 0x22 1 LORA RW Payload length
+
+REG MaxPayloadLength 0x23 1 LORA RW Maximum payload length
+
+REG HopPeriod 0x24 1 LORA RW Frequency hopping period
+
+REG FifoRxByteAddr 0x25 1 LORA R Address of last byte in received FIFO
+
+REG ModemConfigExt 0x26 1 LORA RW LoRa modem configuration 3
+    SKIP 4
+    FIELD 1 LowDataRateOptimize RW Improves performance at low data rates
+    FIELD 1 AgcMode RW Enables automatic gain control
+        VALUE 0 Manual Manual gain control
+        VALUE 1 Auto Automatic gain control
+    SKIP 2
+    
+REG PPMCorrection 0x27 1 LORA RW Data rate offset value, used in conjunction with AFC
+
+# -NOTE: Implement eq in into
+REG FrequencyError 0x28 3 LORA R Frequency error indicator
+    FIELD 12 Fei R Frequency error Raw
+
+REG RssiWideband 0x2C 1 LORA R Wideband RSSI measurement
+
+REG IfFrequency 0x2F 2 LORA RW Errata IFFreq2/3
+
+REG DetectOptimize 0x31 1 LORA RW Detection optimization settings (used for SF6)
+    FIELD 1 AutomaticIF RW Should be set to 0x0 after each reset (POR on manual). See errata note for more information
+    SKIP 4
+    FIELD 3 DetectionOptimize RW Adjusts detection algorithm
+        VALUE 0 Default Default setting
+        VALUE 5 OptimizeSf6 Required setting for SF6 mode
+
+REG InvertIQ 0x33 1 LORA RW IQ signal inversion
+    SKIP 1
+    FIELD 1 InvertIQRx RW Inverts IQ in receiver
+    SKIP 5
+    FIELD 1 InvertIQTx RW Inverts IQ in Transmitter
+
+REG HighBWOptimize1 0x36 1 LORA RW Optimization for 500 kHz bandwidth. See errata note
+
+REG DetectionThreshold 0x37 1 LORA RW Detection threshold for SF6
+    FIELD 8 DetectionThreshold RW Adjusts threshold for preamble detection
+        VALUE 10 Default Default threshold
+        VALUE 12 Sf6Threshold Recommended value for SF6 mode
+
+REG SyncWord 0x39 1 LORA RW LoRa sync word
+
+REG HighBWOptimize2 0x3A 1 LORA RW Optimization for 500 kHz bandwidth. See errata note.
+
+REG InvertIQ2 0x3B 1 LORA RW Controls IQ Inversion
+    FIELD 8 IQInversion RW IQ Inversion status
+        VALUE 25 Inverted IQ Inversion ON
+        VALUE 29 Default IQ Inversion Off
+
+# -NOTE: Use irq enum to compute value or error
+REG DioMapping 0x40 2 LORA RW Interrupt mapping
+
+# NOTE: Use irq enum to compute value or error
+REG DioMapping 0x40 2 FSK RW Interrupt mapping
+
+REG Version 0x42 1 ALL R Semtech chip version
+
+REG Tcxo 0x4B 1 ALL RW TCXO control
+    SKIP 3
+    FIELD 1 TcxoInput RW Enables external TCXO control
+        VALUE 0 Off Internal crystal oscillator
+        VALUE 1 On External TCXO enabled
+    SKIP 4
+
+REG OpMode 0x01 1 FSK RW Operating mode & modulation selection
+    FIELD 1 LongRangeMode R LoRa mode enable flag (read-only)
+        VALUE 0 FskOokMode FSK/OOK Mode
+        VALUE 1 LoRaMode LoRa Mode
+    FIELD 2 ModulationType RW Select modulation scheme
+        VALUE 0 Fsk Frequency Shift Keying
+        VALUE 1 Ook On-Off Keying
+    SKIP 1
+    FIELD 1 LowFrequencyMode RW Enables access to LF test registers
+        VALUE 0 HighFrequency Access HF test registers
+        VALUE 1 LowFrequency Access LF test registers
+    FIELD 3 Mode RW Transceiver mode control
+        VALUE 0 Sleep Sleep mode
+        VALUE 1 Stdby Standby mode
+        VALUE 2 FsTx Frequency synthesis TX
+        VALUE 3 Tx Transmit mode
+        VALUE 4 FsRx Frequency synthesis RX
+        VALUE 5 Rx Receive mode
+
+REG Bitrate 0x02 2 FSK RW Bit rate configuration. BR = F_{xosc} / (VAL + (1/16 * BRFrac))
+
+REG FrequencyDeviation 0x04 2 FSK RW Frequency deviation
+    SKIP 2
+    FIELD 14 FdevMsb RW MSB of frequency deviation
+
+REG RxConfig 0x0D 1 FSK RW RX configuration
+    FIELD 1 RestartRxOnCollision RW Restart receiver on sync address collision
+    FIELD 1 RestartRxWithoutPllLock RW Restart RX even without PLL lock
+    FIELD 1 RestartRxWithPllLock RW Restart RX if PLL locks
+    FIELD 1 AfcAuto RW Enables automatic AFC
+    FIELD 1 AgcAuto RW Enables automatic AGC
+    FIELD 3 RxTrigger RW RX trigger mechanism
+        VALUE 0 None No triggering event
+        VALUE 1 RSSIIrq Change on rssi irq
+        VALUE 6 PreambleDetect Change on preamble detect
+        VALUE 7 RSSIAndPreamble Cange on either RSSI IRQ or Preamble detection
+
+# NOTE: Select RSSI offset, 1dB/LSB, 2's complement
+REG RssiConfig 0x0E 1 FSK RW RSSI configuration
+    FIELD 5 RssiOffset RW RSSI offset compensation
+    FIELD 3 RssiSmoothing RW RSSI averaging factor
+        VALUE 0 Smoothing2Samples 2 Samples smoothing
+        VALUE 1 Smoothing4Samples 4 Samples smoothing
+        VALUE 2 Smoothing8Samples 8 Samples smoothing
+        VALUE 3 Smoothing16Samples 16 Samples smoothing
+        VALUE 4 Smoothing32Samples 32 Samples smoothing
+        VALUE 5 Smoothing64Samples 64 Samples smoothing
+        VALUE 6 Smoothing128Samples 128 Samples smoothing
+        VALUE 7 Smoothing256Samples 256 Samples smoothing
+
+REG RssiCollisionThreshold 0x0F 1 FSK RW Sets the threshold used to consider that an interferer is detected, witnessing a packet collision. 1dB/LSB (only RSSI increase)
+
+REG RssiThreshold 0x10 1 FSK RW RSSI threshold
+
+# NOTE: Apply conversion
+REG RssiValue 0x11 1 FSK R Measured RSSI value
+
+REG RxBw 0x12 1 FSK RW Channel filter bandwidth control
+    SKIP 3
+    FIELD 2 RxBwMant RW Mantissa of RX bandwidth
+        VALUE 0 Mant16 Mantissa 16
+        VALUE 1 Mant20 Mantissa 20
+        VALUE 2 Mant24 Mantissa 24
+    FIELD 3 RxBwExp RW Exponent for RX bandwidth
+
+REG AfcBw 0x13 1 FSK RW AFC bandwidth
+    SKIP 3
+    FIELD 2 AfcBwMant RW Mantissa of AFC bandwidth
+        VALUE 0 Mant16 Mantissa 16
+        VALUE 1 Mant20 Mantissa 20
+        VALUE 2 Mant24 Mantissa 24
+    FIELD 3 AfcBwExp RW Exponent for AFC bandwidth
+
+REG OokPeak 0x14 1 FSK RW OOK demodulator peak mode
+    SKIP 2
+    FIELD 1 BitSync RW Enables the Bit Synchronizer
+    FIELD 2 OokThreshType RW Type of OOK thresholding
+        VALUE 0 Fixed Fixed threshold
+        VALUE 1 Peak Peak thresholding
+        VALUE 2 Average Average threshold
+    FIELD 3 OokPeakThreshStep RW Step size for threshold change
+        VALUE 0 Step0db5 Step Size 0.5dB
+        VALUE 1 Step1db0 Step Size 1dB
+        VALUE 2 Step1db5 Step Size 1.5dB
+        VALUE 3 Step2db0 Step Size 2dB
+        VALUE 4 Step3db0 Step Size 3dB
+        VALUE 5 Step4db0 Step Size 4dB
+        VALUE 6 Step5db0 Step Size 5dB
+        VALUE 7 Step6db0 Step Size 6dB
+
+REG OokFix 0x15 1 FSK RW Fixed threshold for OOK
+
+REG OokAvg 0x16 1 FSK RW OOK average thresholding
+    FIELD 3 OokPeakThreshDec RW Period of decrement of the RSSI threshold in the OOK
+        VALUE 0 Once Once per chip
+        VALUE 1 OnceTwo Once every two chip
+        VALUE 2 OnceFour Once every four chip
+        VALUE 3 OnceEight Once every eight chip
+        VALUE 4 Twice Twice per chip
+        VALUE 5 FourTimes Four times per chip
+        VALUE 6 EightTimes Eight times per chip
+        VALUE 7 Sixteen Sixteen times per chip
+    SKIP 1
+    FIELD 2 OokAvgOffset RW Offset applied to average
+        VALUE 0 Offset0dB 0dB offset
+        VALUE 1 Offset2dB 2dB Offset
+        VALUE 2 Offset4dB 4dB Offset
+        VALUE 3 Offset6dB 6dB Offset
+    FIELD 2 OokAvgThreshFilt RW Averaging filter coefficient
+        VALUE 0 ChipRateOver32Pi Fc = chipRate / 32pi
+        VALUE 1 ChipRateOver8Pi Fc = chipRate / 8pi
+        VALUE 2 ChipRateOver4Pi Fc = chipRate / 4pi
+        VALUE 3 ChipRateOver2Pi Fc = chipRate / 2pi
+
+REG AfcFei 0x1A 1 FSK RW AFC/FEI control
+    SKIP 3
+    FIELD 1 AgcStart RW Triggers AGC Start sequence
+    SKIP 2
+    FIELD 1 AfcClear RW Clears AFC value
+    FIELD 1 AfcAutoClear RW Enables automatic AFC clearig when AfcAutoClear is true
+
+REG AfcValue 0x1B 2 FSK R AFC correction value
+
+REG FeiValue 0x1D 2 FSK R Frequency error indicator value
+
+REG PreambleDetect 0x1F 1 FSK RW Preamble detection
+    FIELD 1 PreambleDetector RW Enables preamble detection
+    FIELD 2 PreambleDetectorSize RW Number of 0-1 transitions
+        VALUE 0 Size1B One Byte
+        VALUE 1 Size2B Two bytes
+        VALUE 2 Size3B Three bytes
+    FIELD 5 PreambleDetectorTol RW Tolerance on transitions
+
+REG RxTimeout 0x20 3 FSK RW RX timeout
+    FIELD 8 TimeoutRxRssi RW Timeout interrupt is generated TimeoutRxRssi*16*Tbit after switching to Rx mode if Rssi interrupt doesn't occur. Zero for disabling
+    FIELD 8 TimeoutRxPreamble RW Timeout interrupt is generated TimeoutRxPreamble*16*Tbit after switching to Rx mode if Preamble interrupt doesn't occur
+    FIELD 8 TimeoutSignalSync RW Timeout interrupt is generated TimeoutSignalSync*16*Tbit after the Rx mode is programmed, if SyncAddress doesn't occur
+
+REG RxDelay 0x23 1 FSK RW Additional delay before an automatic receiver restart is launched. Delay = InterPacketRxDelay*4*Tbit
+
+REG Osc 0x24 1 FSK RW Oscillator tuning
+    SKIP 4
+    FIELD 1 RcCalStart RW Triggers RC calibration
+    FIELD 3 ClkOut RW Selects CLKOUT frequency
+        VALUE 0 Div1 Clockout frequency is FXOSC / 1
+        VALUE 1 Div2 Clockout frequency is FXOSC / 2
+        VALUE 2 Div4 Clockout frequency is FXOSC / 4
+        VALUE 3 Div8 Clockout frequency is FXOSC / 8
+        VALUE 4 Div16 Clockout frequency is FXOSC / 16
+        VALUE 5 Div32 Clockout frequency is FXOSC / 32
+        VALUE 6 Rc Clockout frequency is RC clock
+        VALUE 7 Off Clockout is Off
+
+REG Preamble 0x25 2 FSK RW Preamble length
+
+REG SyncConfig 0x27 1 FSK RW Sync word configuration
+    FIELD 2 AutoRestartRxMode RW Controls the automatic restart of the receiver after the reception of a valid packet
+        VALUE 0 Off Do not restart
+        VALUE 1 NoPllLock Restart without PLL lock waiting
+        VALUE 2 PllLock Restart waiting pll relock
+    FIELD 1 PreamblePolarity RW Enables sync word detection
+        VALUE 0 PolAA AA Polarity
+        VALUE 1 Pol55 55 Polarity
+    FIELD 1 Sync RW Enables sync word detection
+    SKIP 1
+    FIELD 3 SyncSize RW Sync word size (number of bytes - 1)
+
+# NOTE: Make array of u8
+REG SyncValue1 0x28 8 FSK RW Sync word values
+
+REG PacketConfig 0x30 2 FSK RW Packet mode configuration 1
+    FIELD 1 PacketFormat RW Packet format mode
+        VALUE 0 Fixed Fixed length packets
+        VALUE 1 Variable Variable length packets
+    FIELD 2 DcFree RW DC-free encoding scheme
+        VALUE 0 None No encoding
+        VALUE 1 Manchester Manchester encoding
+        VALUE 2 Whitening Data whitening
+    FIELD 1 Crc RW Enables CRC
+    FIELD 1 CrcAutoClearOff RW Prevents CRC auto-clear on error
+    FIELD 2 AddressFiltering RW Address filtering enable
+        VALUE 0 None None
+        VALUE 1 AddressMatch Address field must match NodeAddress
+        VALUE 2 AddressMatchBroadcast Address field must match NodeAddress or BroadcastAddress
+    FIELD 1 CrcWhiteningType RW Address filtering enable
+        VALUE 0 CCITT CCITT CRC Implementation
+        VALUE 1 IBM IBM CRC Implementation
+    SKIP 1
+    FIELD 1 DataMode RW Data mode selection
+        VALUE 0 Continuous Continuous transmission
+        VALUE 1 Packet Packet-based
+    FIELD 1 IoHome RW Enables I/O home automation compatibility
+    FIELD 1 IoHomePowerFrame RW Reserved
+    FIELD 1 Beacon RW Enables beacon mode
+    FIELD 3 PayloadLengthMSB RW Payload length msb
+
+REG PayloadLength 0x32 1 FSK RW Payload length (in bytes)
+
+REG NodeAdrs 0x33 1 FSK RW Node address
+
+REG BroadcastAdrs 0x34 1 FSK RW Broadcast address
+
+REG FifoThresh 0x35 1 FSK RW FIFO threshold
+    FIELD 1 TxStartCondition RW When to start TX based on threshold
+        VALUE 0 FifoEmpty Start TX when FIFO is empty
+        VALUE 1 FifoLevel Start TX when FIFO reaches threshold
+    SKIP 1
+    FIELD 6 FifoThreshold RW Used to trigger FifoLevel interrupt, when number of bytes in FIFO >= FifoThreshold + 1
+
+REG SeqConfig 0x36 2 FSK RW Sequencer configuration
+    FIELD 1 SequencerStart RW SequencerStart
+    FIELD 1 SequencerStop RW SequencerStop
+    FIELD 1 IdleMode RW Selects chip mode during the state
+        VALUE 0 Standby Go to Standby mode
+        VALUE 1 Sleep Go to sleep mode
+    FIELD 2 FromStart RW Controls the Sequencer transition when SequencerStart is set to 1 in Sleep or Standby mode
+        VALUE 0 LowPower To LowPowerSelection
+        VALUE 1 Receive To RX
+        VALUE 2 Transmit To Tx
+        VALUE 3 TransmitOnFifoIrq to Transmit state on a FifoLevel interrupt
+    FIELD 1 LowPowerSelection RW Selects the Sequencer LowPower state after a to LowPowerSelection transition
+        VALUE 0 SequencerOff SequencerOff
+        VALUE 1 Idle Idle state with chip on Standby or Sleep mode depending on IdleMode
+    FIELD 1 FromIdle RW Controls the Sequencer transition from the Idle state on a T1 interrupt
+        VALUE 0 Transmit To Transmit
+        VALUE 1 Receive To Receive
+    FIELD 1 FromTransmit RW Controls the Sequencer transition from the Transmit state
+        VALUE 0 LowPowerSel to LowPowerSelection
+        VALUE 1 Receive to Receive state
+    FIELD 3 FromReceive RW Controls the Sequencer transition from the Receive state
+        VALUE 1 ToPacketReceivedOnPayloadReady .
+        VALUE 2 ToLowPowerSelectionOnPayloadReady .
+        VALUE 3 ToPacketReceivedOnCrcOk .
+        VALUE 4 ToSequencerOffOnRssi .
+        VALUE 5 ToSequencerOffOnSyncAddress .
+        VALUE 6 ToSequencerOffOnPreambleDetect .
+    FIELD 2 FromRxTimeout RW Controls the state-machine transition from the Receive state on aRxTimeout Interrupt
+        VALUE 0 Receive .
+        VALUE 1 Transmit .
+        VALUE 2 LowPowerSelection .
+        VALUE 3 SequencerOff .
+    FIELD 3 FromPacketReceived RW Controls the state-machine transition from the PacketReceived state
+        VALUE 0 SequencerOff .
+        VALUE 1 TransmitOnFifoEmpty .
+        VALUE 2 LowPowerSelection .
+        VALUE 3 ReceiveViaFSMode .
+        VALUE 4 Receive .
+
+# -NOTE: make only one enum
+REG TimerResol 0x38 1 FSK RW Timer resolution
+    SKIP 4
+    FIELD 2 Timer1Res RW Timer 1 resolution
+        VALUE 0 Disabled Disabled
+        VALUE 1 Res64us 64us
+        VALUE 2 Res4ms1 4.1ms
+        VALUE 3 Res262ms 262ms
+    FIELD 2 Timer2Res RW Timer 2 resolution
+        VALUE 0 Disabled Disabled
+        VALUE 1 Res64us 64us
+        VALUE 2 Res4ms1 4.1ms
+        VALUE 3 Res262ms 262ms
+
+REG Timer1Coef 0x39 1 FSK RW Timer 1 coefficient
+
+REG Timer2Coef 0x3A 1 FSK RW Timer 2 coefficient
+
+REG ImageCal 0x3B 1 FSK RW Image calibration
+    FIELD 1 AutoImageCal RW Automatic Cal
+    FIELD 1 ImageCalStart RW Starts image calibration
+    FIELD 1 ImageCalRunning R Indicates calibration running
+    SKIP 1
+    FIELD 1 IrqTempChange R One on temp over threshold
+    FIELD 2 TempThreshols RW Temperature change threshold to trigger a new I/Q calibration
+        VALUE 0 Th5Degree 5C
+        VALUE 1 Th10Degree 10C
+        VALUE 2 Th15Degree 15C
+        VALUE 3 Th20Degree 20C
+    FIELD 1 TempMonitorDisable RW Disable temperature monitoring
+
+REG Temp 0x3C 1 FSK R Temperature measurement result
+
+REG LowBat 0x3D 1 FSK RW Low battery detection
+    SKIP 4
+    FIELD 1 LowBat RW Enables low battery detection
+    FIELD 3 LowBatTrim RW Sets low battery threshold
+        VALUE 0 V1695 1.695V
+        VALUE 1 V1764 1.764V
+        VALUE 2 V1835 1.835V
+        VALUE 3 V1905 1.905V
+        VALUE 4 V1976 1.976V
+        VALUE 5 V2045 2.045V
+        VALUE 6 V2116 2.116V
+        VALUE 7 V2185 2.185V
+
+REG IrqFlags1 0x3E 1 FSK RW IRQ status flags 1
+    FIELD 1 ModeReady R Set when the operation mode requested in Mode, is ready
+    FIELD 1 RxReady R Receiver is ready
+    FIELD 1 TxReady R Transmitter is ready
+    FIELD 1 PllLock R Set (in FS, Rx or Tx) when the PLL is locked.
+    FIELD 1 Rssi RW Rssi exceeding threshold
+    FIELD 1 Timeout R Timeout
+    FIELD 1 PreambleDetected RW Preamble was detected
+    FIELD 1 SyncAddressMatch RW Sync address matched
+    FIELD 1 FifoFull R FIFO is full
+    FIELD 1 FifoEmpty R FIFO is empty
+    FIELD 1 FifoLevel R FIFO reached threshold
+    FIELD 1 FifoOverrun RW FIFO overrun occurred
+    FIELD 1 PacketSent R Packet sent
+    FIELD 1 PayloadReady R Payload is ready
+    FIELD 1 CrcOk R CRC passed
+    FIELD 1 LowBat RW Low Battery detected
+
+
+REG AgcRef 0x61 1 ALL RW AGC reference level
+    SKIP 2
+    FIELD 6 AgcReferenceLevel RW AGC floor reference in dB. -174dBm+10*log(2*RxBw)+SNR+AgcReferenceLevel
+
+REG AgcThresh 0x62 3 ALL RW AGC threshold
+    SKIP 3
+    FIELD 5 AgcStep1 RW First AGC threshold level
+    FIELD 4 AgcStep2 RW Second AGC threshold level
+    FIELD 4 AgcStep3 RW Third AGC threshold level
+    FIELD 4 AgcStep4 RW Fourth AGC threshold level
+    FIELD 4 AgcStep5 RW Fifth AGC threshold level
+
+REG Pll 0x70 1 ALL RW PLL bandwidth setting
+    FIELD 2 PllBandwidth RW Sets PLL loop bandwidth
+        VALUE 0 Bw75kHz 75 kHz
+        VALUE 1 Bw150kHz 150 kHz
+        VALUE 2 Bw225kHz 225 kHz
+        VALUE 3 Bw300kHz 300 kHz
+    SKIP 6

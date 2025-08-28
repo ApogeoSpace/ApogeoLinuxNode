@@ -1,0 +1,8 @@
+[Unit]
+Description=Iotd node transmission action
+Requires=iotdconfig@%I.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=false
+ExecStart=%BINDIR%/iotdnode.sh %I %DATAFILE%

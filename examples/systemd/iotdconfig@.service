@@ -1,0 +1,10 @@
+[Unit]
+Description=Iotd node configuration
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStart=%BINDIR%/configure.sh %I %CONFDIR%
+
+[Install]
+WantedBy=network-online.target

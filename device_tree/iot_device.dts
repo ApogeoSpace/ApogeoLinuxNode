@@ -1,0 +1,98 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+	fragment@0 {
+		target = <&spi0>;
+		__overlay__ {
+			status = "okay";
+			/* Disable spidev 0 to leave the CS0 to the module */
+			/* NOTE: comment if CS1 is needed instead of CS0 */
+			spidev@0{
+				status = "disabled";
+			};
+
+			/* Disable spidev 1 to leave the CS1 to the module. */
+			/* NOTE: uncomment if CS1 is needed instead of CS0 */
+			/* spidev@1{ */
+			/*	status = "disabled"; */
+			/* }; */
+		};
+	};
+
+	fragment@1 {
+		/* Target SPI device for the module. Module uses SPI0 on the GPIO connector*/
+		/* GPIO9  => MISO */
+		/* GPIO10 => MOSI */
+		/* GPIO11 => SCK  */
+		target = <&spi0>;
+		frag1: __overlay__ {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			/* Device definition. Change with iotd@1 if using CS1 instead of CS0 */
+			iotd0: iotd@0 {
+				compatible = "aps,aps_iotd";
+				
+				/* Configure the correct CS selected on the shield*/
+				reg = <0>;		  /* Use CS0*/
+				/* reg = <1> */;  /* Use CS1*/
+				
+				#address-cells = <1>;
+				#size-cells = <0>;
+				spi-max-frequency = <10000000>;
+
+				#interrupt-cells = <2>;
+				interrupt-parent = <&gpio>;
+
+				/* Set the D0 pin selection and configure it as input */
+				irq-gpio = <&gpio 5 0>;       /* Shield selection uses GPIO5 as D0*/
+				/* irq-gpio = <&gpio 6 0>; */ /* Shield selection uses GPIO6 as D0*/
+				
+				/* Define interrupt type for the D0 pin to be rising edge */
+				interrupts = <5 1>;       /* Shield selection uses GPIO5 as D0*/
+				/* interrupts = <6 1>; */ /* Shield selection uses GPIO6 as D0*/
+				
+
+				/* Define reset GPIO and configure it as output*/
+				rst-gpio = <&gpio 22 1>;       /* Shield selection uses GPIO11 as RST*/
+				/* rst-gpio = <&gpio 27 1>; */ /* Shield selection uses GPIO27 as RST*/
+				
+				/* Dedicated startup configuration */
+				/* See README.md for detailed list of options */
+				sf = <7>;
+				bw = <5>;
+				header = <1>;
+				crc = <1>;
+				pwr = <10>;
+				nation_id = <0>;
+				freq = <169425000>;
+				preamble = <12>;
+				pa_boost = <1>;
+				node_id = <42>;
+			};
+		};
+	};
+
+	fragment@2 {
+		/* GPIO CONFIGURATION */
+		target = <&gpio>;
+		frag2: __overlay__ {
+			iotd_pins: iotd_pins {
+				/* Configure pins as */
+				/* GPIO22 => Output Push-Pull mode  */
+				/* GPIO5 => Input pull-down mode  */
+ 				brcm,pins =     <22 5>;
+ 				brcm,function = <1 0>;
+ 				brcm,pull =     <1 0>;
+
+				/* Configure pins as */
+				/* GPIO27 => Output Push-Pull mode  */
+				/* GPIO6 => Input pull-down mode  */
+ 				/* brcm,pins =     <27 6>; */
+ 				/* brcm,function = <1 0>; */
+ 				/* brcm,pull =     <1 0>; */
+ 			};
+		};
+	};
+};

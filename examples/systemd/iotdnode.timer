@@ -1,0 +1,9 @@
+[Unit]
+Description=Send node data
+
+[Timer]
+OnBootSec=%BOOTTIME%
+OnUnitActiveSec=%INTERVAL%
+
+[Install]
+WantedBy=timers.target
