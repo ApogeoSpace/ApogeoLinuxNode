@@ -1,5 +1,6 @@
 # APS Node Linux
 
+> MSRV: 1.92.0-nightly
 This repo contains source code for the aps node Linux kernel module.
 
 ## Compatibility
@@ -170,4 +171,8 @@ aftrer which the payload is appended. Note, the payload is trucated if necessary
 
 # TODO
 
+<<<<<<< HEAD
 - [ ] Support for 5W module
+=======
+- [ ] Support for 5W module
+>>>>>>> master

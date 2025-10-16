@@ -1,10 +1,12 @@
+cargo-features = ["panic-immediate-abort"]
+
 [workspace]
 resolver = "3"
 members = ["iotd", "lib/aps-crypto", "lib/sx1278"]
 
 [workspace.package]
 edition = "2024"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Stefano Fontana <s.fontana@apogeo.space>"]
 
 [workspace.dependencies]
@@ -12,7 +14,7 @@ sx1278 = {path = "./lib/sx1278"}
 aps-crypto = {path = "./lib/aps-crypto"}
 
 [profile.release]
-panic = "abort"
+panic = "immediate-abort"
 lto = true
 opt-level = 3
 codegen-units = 1
@@ -20,11 +22,10 @@ strip = "debuginfo"
 
 [profile.dev]
 opt-level = 1
-panic = "abort"
+panic = "immediate-abort"
 debug = "full"
 
 [profile.test]
 opt-level = 3
-panic = "unwind"
 debug = "full"
 lto = true

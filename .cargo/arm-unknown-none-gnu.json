@@ -2,7 +2,7 @@
     "llvm-target": "arm-unknown-none-gnueabi",
     "llvm-floatabi": "soft",
     "target-endian": "little",
-    "target-pointer-width": "32",
+    "target-pointer-width": 32,
     "target-c-int-width": 32,
     "max-atomic-width": 64,
     "os": "none",

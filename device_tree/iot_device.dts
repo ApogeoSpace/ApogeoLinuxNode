@@ -36,7 +36,7 @@
 				
 				/* Configure the correct CS selected on the shield*/
 				reg = <0>;		  /* Use CS0*/
-				/* reg = <1> */;  /* Use CS1*/
+				/* reg = <1>; */  /* Use CS1*/
 				
 				#address-cells = <1>;
 				#size-cells = <0>;
@@ -95,4 +95,8 @@
  			};
 		};
 	};
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> master
