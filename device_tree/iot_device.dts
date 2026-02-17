@@ -42,7 +42,6 @@
 				#size-cells = <0>;
 				spi-max-frequency = <10000000>;
 
-				#interrupt-cells = <2>;
 				interrupt-parent = <&gpio>;
 
 				/* Set the D0 pin selection and configure it as input */
@@ -95,8 +94,4 @@
  			};
 		};
 	};
-<<<<<<< HEAD
 };
-=======
-};
->>>>>>> master

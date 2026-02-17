@@ -74,7 +74,7 @@ dependencies = [
 
 [[package]]
 name = "aps-crypto"
-version = "0.1.0"
+version = "0.1.2"
 dependencies = [
  "aes",
  "cmac",
@@ -352,7 +352,7 @@ dependencies = [
 
 [[package]]
 name = "iotd"
-version = "0.1.0"
+version = "0.1.2"
 dependencies = [
  "aps-crypto",
  "bindgen",
@@ -625,7 +625,7 @@ checksum = "13c2bddecc57b384dee18652358fb23172facb8a2c51ccc10d74c157bdea3292"
 
 [[package]]
 name = "sx1278"
-version = "0.1.0"
+version = "0.1.2"
 dependencies = [
  "bitflags",
  "libm",

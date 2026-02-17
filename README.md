@@ -1,6 +1,7 @@
 # APS Node Linux
 
-> MSRV: 1.92.0-nightly
+> MSRV: 1.95.0-nightly
+
 This repo contains source code for the aps node Linux kernel module.
 
 ## Compatibility
@@ -13,18 +14,18 @@ This module has been written to be compatible with device tree enabled systems.
 ## Requirements
 
 Install the required development packages:
- - clang
- - make
- - gcc
- - build-essential
- - linux-headers
+ - `clang`
+ - `make`
+ - `gcc`
+ - `build-essential`
+ - `linux-headers-$(uname -r)`
 
 Refer to rust installation guide (here)[https://rustup.rs/], then install the nightly toolchain and additional packages
 
 ```
     . "$HOME/.cargo/env" 
     rustup toolchain install nightly
-    rustup default nigthly
+    rustup default nightly
     rustup component add rust-src
     cargo install cbindgen
 ```
@@ -171,8 +172,4 @@ aftrer which the payload is appended. Note, the payload is trucated if necessary
 
 # TODO
 
-<<<<<<< HEAD
-- [ ] Support for 5W module
-=======
-- [ ] Support for 5W module
->>>>>>> master
+- [ ] Support for 5W module.

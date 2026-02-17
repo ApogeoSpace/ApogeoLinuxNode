@@ -6,7 +6,7 @@ members = ["iotd", "lib/aps-crypto", "lib/sx1278"]
 
 [workspace.package]
 edition = "2024"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Stefano Fontana <s.fontana@apogeo.space>"]
 
 [workspace.dependencies]

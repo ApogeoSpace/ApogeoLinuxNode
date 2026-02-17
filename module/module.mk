@@ -19,6 +19,6 @@ CARGO_MOD_DIR := $(TOPDIR)/target/$(UTS_MACHINE)-unknown-none-gnu/$(if $(RELEASE
 CARGO_BLD_DIR := $(TOPDIR)/target/$(if $(RELEASE),release,debug)
 
 $(obj)/$(rust-target): $(RUST_SOURCES) FORCE
-	@cd "$(TOPDIR)/iotd" && RUST_TARGET_PATH='$(BASE_DIR)' STD_CLANG_ARGS='$(c_flags)' STD_KERNEL_PATH='$(CURDIR)' STD_CLANG_FILES='$(KERNEL_INCLUDE)' TOPDIR='$(TOPDIR)' cargo rustc $(if $(RELEASE),--release) $(if $(V),--verbose) $(CARGOFLAGS) --target="../.cargo/$(UTS_MACHINE)-unknown-none-gnu.json" -- $(RCFLAGS)
+	@cd "$(TOPDIR)/iotd" && RUST_TARGET_PATH='$(BASE_DIR)' STD_CLANG_ARGS='$(c_flags)' STD_KERNEL_PATH='$(CURDIR)' STD_CLANG_FILES='$(KERNEL_INCLUDE)' TOPDIR='$(TOPDIR)' cargo rustc -Zjson-target-spec $(if $(RELEASE),--release) $(if $(V),--verbose) $(CARGOFLAGS) --target="../.cargo/$(UTS_MACHINE)-unknown-none-gnu.json" -- $(RCFLAGS)
 	@cp "$(CARGO_MOD_DIR)/$(rust-target)" $(obj)
 	touch $(obj)/.$(rust-target).cmd

@@ -223,15 +223,16 @@ impl<SPI: SpiAdapter> SX1278<LORA, SPI> {
 
         self.write_register::<FifoAddrPtr>(&addr.into())?;
 
-        let mut buf = [128u8; 257];
-        buf[1..data.len() + 1].copy_from_slice(data);
-        return self.spi.write(&buf[..data.len() + 1])
+        let mut buf = [128u8; 258];
+        buf[1] = addr;
+        buf[2..data.len() + 2].copy_from_slice(data);
+        return self.spi.write(&buf[..data.len() + 2])
     }
 
     pub fn read_fifo(&mut self, addr: u8, data: &mut [u8]) -> Result<(), SX1278Error> {
         assert!((data.len() + addr as usize) <= 256);
 
         self.write_register::<FifoAddrPtr>(&addr.into())?;
-        return self.spi.transaction(&[128u8], data, false)
+        return self.spi.transaction(&[0u8], data, false)
     }
 }
